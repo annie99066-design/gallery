@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GALLERY — ILLUSTRATION &amp; FANART VISUAL ARCHIVE</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Cinzel for wordmark -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Base reset & Strict 100vh Fullscreen (Zero vertical scroll) ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden !important;
+      font-family: system-ui, -apple-system, sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      background-color: #ffffff;
+    }
+    img {
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
+      pointer-events: auto;
+    }
+
+    /* ── Large Halftone Screentone (Softened Dark Grey, Below 46% line only) ── */
+    .large-halftone-band {
+      background-color: #ffffff;
+      background-image: radial-gradient(circle, #858585 3.5px, transparent 3.6px);
+      background-size: 20px 20px;
+      background-position: 0 0;
+    }
+
+    /* ── Phone Chamfered Corners Clip-Path (Strict overflow clipping) ── */
+    .phone-chamfer-clip {
+      clip-path: polygon(
+        28px 0%,
+        calc(100% - 28px) 0%,
+        100% 28px,
+        100% 100%,
+        0% 100%,
+        0% 28px
+      );
+      -webkit-clip-path: polygon(
+        28px 0%,
+        calc(100% - 28px) 0%,
+        100% 28px,
+        100% 100%,
+        0% 100%,
+        0% 28px
+      );
+    }
+
+    /* ── Wordmark Cinzel styling (Swiss Editorial Left-Aligned - Soft Dark Grey) ── */
+    .wordmark {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      transform: scaleY(1.18);
+      transform-origin: left top;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Stories Carousel Drag & Hide Scrollbar ──────────────── */
+    #storiesCarousel {
+      cursor: grab;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #storiesCarousel.is-dragging {
+      cursor: grabbing;
+    }
+    #storiesCarousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ── White-dot filter for side artworks ──────────────────── */
+    .white-dot-filter {
+      position: relative;
+    }
+    .white-dot-filter::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.55) 1.5px, transparent 1.5px);
+      background-size: 5px 5px;
+      pointer-events: none;
+    }
+
+    /* ── Floating artwork shadow ─────────────────────────────── */
+    .floating-artwork-shadow {
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,.18));
+    }
+
+    /* ── Loading sprite bounce ───────────────────────────────── */
+    #loaderSprite {
+      transition: transform 0.34s ease;
+    }
+
+    /* ── Scrollbar hide utility ──────────────────────────────── */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ── Modal backdrop blur ─────────────────────────────────── */
+    .modal-backdrop {
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+  </style>
+</head>
+<body class="bg-white text-neutral-900 overflow-hidden h-screen w-screen">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LOADING SCREEN (fullscreen overlay)
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="loadingScreen"
+       class="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center gap-4">
+    <img id="loaderSprite" src="" alt="loading"
+         class="w-20 h-20 object-contain"
+         draggable="false" oncontextmenu="return false;" />
+    <p id="loadingPrimary"
+       class="text-[11px] tracking-[.25em] uppercase text-neutral-400"></p>
+    <p id="loadingSecondary"
+       class="text-[10px] tracking-[.18em] uppercase text-neutral-300"></p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LAYER 1 — HOME (Fullscreen Single-Page Hero + Bottom-Flushed Phone)
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="layerHome"
+           class="relative w-full h-screen overflow-hidden bg-white">
+
+    <!-- ── z-0 : Horizontal Solid Grey Divider (at 46%) + Large Halftone Dots BELOW only (Soft Dark Grey) ── -->
+    <div class="absolute inset-x-0 bottom-0 top-[46%] z-0 border-t-2 border-[#888888] large-halftone-band pointer-events-none"></div>
+
+    <!-- ── z-10 : Diagonal Dashed Lines & Stars System (Soft Dark Grey Tone) ── -->
+    <svg class="absolute inset-0 w-full h-full z-10 pointer-events-none overflow-hidden select-none"
+         preserveAspectRatio="none" viewBox="0 0 1440 900">
+      <defs>
+        <!-- Hollow 4-point star template (Soft Dark Grey) -->
+        <g id="hollowStar">
+          <path d="M0 -55 Q0 -5 18 0 Q0 5 0 55 Q0 5 -18 0 Q0 -5 0 -55 Z"
+                fill="none" stroke="#707070" stroke-width="2.2" stroke-linejoin="round"/>
+        </g>
+        <g id="hollowStarSmall">
+          <path d="M0 -36 Q0 -3 12 0 Q0 3 0 36 Q0 3 -12 0 Q0 -3 0 -36 Z"
+                fill="none" stroke="#707070" stroke-width="2" stroke-linejoin="round"/>
+        </g>
+      </defs>
+
+      <!-- Parallel diagonal dashed lines traversing top-left to bottom-right -->
+      <line x1="-50" y1="120" x2="1550" y2="780" stroke="#949494" stroke-width="1.3" stroke-dasharray="6, 7" />
+      <line x1="-50" y1="155" x2="1550" y2="815" stroke="#949494" stroke-width="1.3" stroke-dasharray="6, 7" />
+
+      <!-- Left Stars on the diagonal line -->
+      <!-- Star 1 (Left-top hollow star under GALLERY 'G') -->
+      <use href="#hollowStar" x="140" y="250" />
+      <!-- Star 2 (Mid-left hollow star on lower dashed line) -->
+      <use href="#hollowStarSmall" x="345" y="380" />
+
+      <!-- Right Stars on the diagonal line -->
+      <!-- Star 3 (Mid-right hollow star over halftone band) -->
+      <use href="#hollowStarSmall" x="1110" y="720" />
+      <!-- Star 4 (Far-right hollow star near bottom edge) -->
+      <use href="#hollowStar" x="1310" y="810" />
+
+      <!-- Solid bled-out stars at screen margins (Soft Dark Grey #525252) -->
+      <!-- Left bottom solid star (cut in half at left edge) -->
+      <path d="M0 640 Q25 730 65 745 Q25 760 0 850 Z" fill="#525252" />
+      <!-- Right tall solid star (cut at right edge) -->
+      <path d="M1440 220 Q1410 320 1360 340 Q1410 360 1440 460 Z" fill="#525252" />
+      <!-- Top left tiny bled star tip -->
+      <path d="M10 0 Q20 30 25 50 Q10 25 0 20 Z" fill="#525252" opacity="0.6" />
+    </svg>
+
+    <!-- ── z-10 : Wordmark + Subtitle (Extra Large - Two Sizes Up, Left-Aligned, Soft Dark Grey) ── -->
+    <div class="relative z-10 w-full pt-5 md:pt-8 pl-6 sm:pl-10 md:pl-14 lg:pl-20 flex flex-col items-start select-none">
+      <h1 id="heroWordmark"
+          class="wordmark text-[16vw] sm:text-[14vw] md:text-[11.5vw] lg:text-[10vw] leading-[0.8] text-[#484848] tracking-tight text-left"></h1>
+      <p id="heroSubtitle"
+         class="text-[10px] sm:text-[11px] md:text-[13px] tracking-[.36em] uppercase text-[#707070] font-semibold text-left mt-3 md:mt-4"></p>
+    </div>
+
+    <!-- ── z-20 : Artist Profile & X Accounts (Right Area, just slightly above 46% line) ── -->
+    <div class="absolute bottom-[55.2%] right-6 sm:right-10 md:right-14 lg:right-20 z-20 flex flex-col items-end text-right select-none">
+      <h2 class="wordmark text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#484848] tracking-tight leading-none mb-2 md:mb-3">
+        Rika
+      </h2>
+      <div class="flex flex-col items-end gap-1.5 md:gap-2">
+        <!-- Account 1: @rika_7sec -->
+        <a href="https://x.com/rika_7sec" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1.5 text-xs sm:text-[13px] md:text-sm font-medium text-[#606060] hover:text-[#1e1e1e] transition-colors group cursor-pointer"
+           title="X (Twitter): @rika_7sec">
+          <!-- X Logo -->
+          <svg class="w-3.5 h-3.5 fill-[#606060] group-hover:fill-[#1e1e1e] transition-colors shrink-0" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          <span class="tracking-wide font-mono">@rika_7sec</span>
+        </a>
+        <!-- Account 2: @hururu_drawww -->
+        <a href="https://x.com/hururu_drawww" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1.5 text-xs sm:text-[13px] md:text-sm font-medium text-[#606060] hover:text-[#1e1e1e] transition-colors group cursor-pointer"
+           title="X (Twitter): @hururu_drawww">
+          <!-- X Logo -->
+          <svg class="w-3.5 h-3.5 fill-[#606060] group-hover:fill-[#1e1e1e] transition-colors shrink-0" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          <span class="tracking-wide font-mono">@hururu_drawww</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── z-20 : Chamfered-corner Phone Frame (Flushed to bottom edge) ── -->
+    <div id="phoneContainer"
+         class="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 w-[92vw] max-w-[380px] md:max-w-[415px] h-[64vh] min-h-[470px] max-h-[590px] flex flex-col">
+
+      <!-- Phone Content Body (strictly clipped with chamfered top & overflow: hidden) -->
+      <div class="phone-chamfer-clip w-full h-full bg-white flex flex-col overflow-hidden shadow-2xl relative">
+
+        <!-- 1. Top Status Bar (Shifted down, enlarged, breathing space from border, Soft Dark Grey) -->
+        <div class="flex items-center justify-between px-7 pt-4 pb-2 bg-white select-none shrink-0 border-b border-neutral-100/80">
+          <span id="phoneStatusTime" class="text-[13px] md:text-sm font-bold text-[#4a4a4a] tracking-tight"></span>
+          <div class="flex items-center gap-2 text-[#606060]">
+            <!-- Cat-ear Wi-Fi icon (Enlarged) -->
+            <svg class="w-4.5 h-4 md:w-5 md:h-4.5" viewBox="0 0 24 20" fill="currentColor">
+              <path d="M4 4 L6 8 C9 6 15 6 18 8 L20 4 C16 1 8 1 4 4 Z M7 10 C9.5 8.5 14.5 8.5 17 10 L15 13 C13.5 12 10.5 12 9 13 Z M10.5 14.5 C11.3 14 12.7 14 13.5 14.5 L12 17 Z"/>
+            </svg>
+            <!-- Battery with heart icon (Enlarged) -->
+            <svg class="w-5 h-3.5 md:w-6 md:h-4" viewBox="0 0 26 14" fill="currentColor">
+              <rect x="1" y="1" width="21" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="23" y="4" width="2" height="6" rx="1"/>
+              <!-- Heart inside -->
+              <path d="M8.5 4.5 C7.5 3.5 6 4 6 5.2 C6 6.5 8.5 8.5 8.5 8.5 C8.5 8.5 11 6.5 11 5.2 C11 4 9.5 3.5 8.5 4.5 Z" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 2. Header Bar: "+" on left, "Sketch ⌵" (Bold & Double Size), "♡" on right (Soft Dark Grey) -->
+        <div class="flex items-center justify-between px-7 py-2.5 md:py-3 bg-white border-b border-neutral-100 select-none shrink-0 relative text-[#484848]">
+          <span class="text-xl md:text-2xl font-light select-none cursor-default leading-none">+</span>
+          <div class="flex items-center gap-1.5">
+            <span id="phoneHeaderTitle" class="text-xl md:text-2xl font-black tracking-wide text-[#484848] leading-none"></span>
+            <span class="text-xs font-bold text-[#707070] leading-none">⌵</span>
+          </div>
+          <span class="text-lg md:text-xl text-[#606060] select-none cursor-default leading-none">♡</span>
+        </div>
+
+        <!-- 3. Stories Carousel (Indented with breathing padding, smooth drag) -->
+        <div class="px-6 py-2.5 bg-white border-b border-neutral-100 shrink-0">
+          <div id="storiesCarousel"
+               class="flex items-start gap-3.5 overflow-x-auto no-scrollbar select-none">
+          </div>
+        </div>
+
+        <!-- 4. Post Author Row (Clickable avatar triggers About modal, Silhouette cat head) -->
+        <div class="flex items-center justify-between px-6 py-2 bg-white border-b border-neutral-100 select-none shrink-0">
+          <!-- Clickable Author Profile Area -->
+          <button id="postAuthorProfileBtn"
+                  class="flex items-center gap-2 cursor-pointer group/author focus:outline-none transition-opacity hover:opacity-80 text-left"
+                  title="View artist profile">
+            <img id="postAuthorAvatar" src="" alt="avatar"
+                 class="w-6 h-6 rounded-full object-cover border border-neutral-200 group-hover/author:scale-108 transition-transform"
+                 draggable="false" oncontextmenu="return false;" />
+            <div class="flex items-center gap-1">
+              <span id="postAuthorHandle" class="text-xs font-bold text-[#4a4a4a] tracking-wide group-hover/author:text-neutral-900 group-hover/author:underline"></span>
+              <!-- Silhouette Cat Head Icon (Soft Dark Grey) -->
+              <svg class="w-3.5 h-3.5 fill-[#4a4a4a] shrink-0 inline-block align-middle ml-0.5 group-hover/author:fill-neutral-900 transition-colors" viewBox="0 0 20 18">
+                <path d="M2 1 L5 6 C7 5 13 5 15 6 L18 1 C19 7 19 12 16 15 C13 18 7 18 4 15 C1 12 1 7 2 1 Z"/>
+              </svg>
+            </div>
+          </button>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1 text-[10px] text-neutral-400 font-mono">
+              <span class="text-neutral-500">♫</span>
+              <span id="postAudioSubtitle" class="truncate max-w-[125px]"></span>
+            </div>
+            <!-- Menu symbol "=" -->
+            <span class="text-xs text-neutral-400 font-mono tracking-tighter select-none font-bold">=</span>
+          </div>
+        </div>
+
+        <!-- 5. Featured Artwork Card (INDENTED inside phone, displays top 1/3~1/2) -->
+        <div class="flex-1 w-full px-5 pb-0 pt-2 bg-white overflow-hidden flex flex-col">
+          <div id="featuredArtworkCard"
+               class="w-full h-full overflow-hidden relative cursor-pointer group rounded-t border border-neutral-200/90 bg-neutral-100 select-none"
+               title="Click to view artwork">
+            <img id="featuredImg" src="" alt="featured artwork"
+                 class="w-full h-full object-cover object-top group-hover:scale-[1.02] transition-transform duration-500 block"
+                 draggable="false" oncontextmenu="return false;" />
+            <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- z-30 : Unbroken Polyline SVG Border (7px stroke, Soft Dark Grey, NO bottom line) -->
+      <svg id="phoneBorderSvg"
+           class="absolute inset-0 w-full h-full pointer-events-none z-30"
+           style="overflow: visible;">
+        <polyline id="phoneBorderPolyline"
+                  points=""
+                  stroke="#484848"
+                  stroke-width="7"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="square"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LAYER 2 — GALLERY (Independent Fullscreen Single-Page Mode)
+       Default hidden: Only shown when clicking a category circle
+       ═══════════════════════════════════════════════════════════ -->
+  <section id="layerGallery"
+           class="hidden fixed inset-0 z-30 w-full h-screen overflow-hidden bg-cover bg-center flex flex-col justify-between py-6 px-4"
+           style="background-color: #121212;">
+
+    <!-- Background image injected via JS with blur & dark tint -->
+    <div id="galleryBg"
+         class="absolute inset-0 bg-cover bg-center opacity-30 filter blur-[2px] pointer-events-none scale-105"></div>
+    <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
+
+    <!-- Top Navigation Bar: Back button + Category tabs -->
+    <div class="relative z-10 w-full flex items-center justify-between gap-4 max-w-6xl mx-auto shrink-0 pt-2">
+      <!-- ← BACK Button -->
+      <button id="backToHomeBtn"
+              class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium tracking-widest uppercase bg-white/90 hover:bg-white text-neutral-900 border border-neutral-300 rounded shadow-md backdrop-blur transition-all active:scale-95"
+              title="Return to Home">
+        ← BACK
+      </button>
+
+      <!-- Category Tabs -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        <div id="categoryTabs" class="flex items-center gap-2"></div>
+      </div>
+
+      <div class="w-[70px] hidden sm:block"></div>
+    </div>
+
+    <!-- Main Carousel Area (3-piece focus carousel: A-1, A, A+1) -->
+    <div class="relative z-10 w-full flex-1 flex flex-col items-center justify-center my-auto min-h-0">
+      <div class="flex items-center justify-between gap-2 md:gap-6 w-full max-w-6xl px-2">
+        <!-- Prev Arrow Button -->
+        <button id="prevBtn"
+                class="text-white/70 hover:text-white text-3xl font-light transition-all p-2 select-none active:scale-90"
+                aria-label="Previous artwork">‹</button>
+
+        <!-- Dynamic Carousel Container -->
+        <div id="carouselContainer"
+             class="flex-1 flex items-center justify-center gap-4 md:gap-8 min-h-0 overflow-hidden">
+        </div>
+
+        <!-- Next Arrow Button -->
+        <button id="nextBtn"
+                class="text-white/70 hover:text-white text-3xl font-light transition-all p-2 select-none active:scale-90"
+                aria-label="Next artwork">›</button>
+      </div>
+
+      <!-- Action Bar under Central Artwork: Magnifier Grid Button + Counter -->
+      <div class="flex items-center gap-4 mt-3 shrink-0">
+        <!-- Circular Magnifier Grid Button -->
+        <button id="magnifierBtn"
+                class="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-neutral-800 flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                title="View Category Grid">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+          </svg>
+        </button>
+
+        <!-- Counter -->
+        <p id="carouselCounter"
+           class="text-[11px] tracking-[.25em] text-white/80 font-mono"></p>
+      </div>
+    </div>
+
+    <!-- Bottom Spacing -->
+    <div class="shrink-0 h-2"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MODALS
+       ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Artwork Detail Modal -->
+  <div id="artworkModal"
+       class="hidden fixed inset-0 z-[900] items-center justify-center modal-backdrop p-4">
+    <div class="relative bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 md:p-8 rounded-lg">
+      <button data-close-modal
+              class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 text-xl font-bold w-8 h-8 flex items-center justify-center">✕</button>
+      <img id="modalArtworkImg" src="" alt=""
+           class="w-full max-h-[55vh] object-contain mb-4 select-none"
+           draggable="false" oncontextmenu="return false;" />
+      <div id="modalArtworkInfo"></div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="aboutModal"
+       class="hidden fixed inset-0 z-[900] items-center justify-center modal-backdrop p-4">
+    <div class="relative bg-white max-w-md w-full shadow-2xl p-8 text-center rounded-lg">
+      <button data-close-modal
+              class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 text-xl font-bold w-8 h-8 flex items-center justify-center">✕</button>
+      <img id="aboutAvatar" src="" alt="avatar"
+           class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-neutral-200 select-none"
+           draggable="false" oncontextmenu="return false;" />
+      <h2 id="aboutName" class="text-lg font-bold tracking-[.2em] uppercase"></h2>
+      <p id="aboutRole" class="text-[11px] tracking-[.2em] text-neutral-400 uppercase mt-1"></p>
+      <p id="aboutBio" class="text-sm text-neutral-600 leading-relaxed mt-4"></p>
+      <p id="aboutEmail" class="text-xs text-neutral-400 mt-4 tracking-wider"></p>
+      <div id="aboutSocials" class="flex items-center justify-center gap-4 mt-3"></div>
+    </div>
+  </div>
+
+  <!-- Category Grid Modal (Magnifier Overview) -->
+  <div id="categoryGridModal"
+       class="hidden fixed inset-0 z-[900] items-center justify-center modal-backdrop p-4">
+    <div class="relative bg-white max-w-4xl w-full max-h-[85vh] overflow-y-auto shadow-2xl p-6 rounded-lg">
+      <button data-close-modal
+              class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 text-xl font-bold z-10 w-8 h-8 flex items-center justify-center">✕</button>
+      <h3 id="categoryGridTitle" class="text-xs font-bold tracking-[.2em] uppercase text-neutral-400 mb-4">CATEGORY OVERVIEW</h3>
+      <div id="categoryGrid"
+           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SCRIPTS  (data first, then app logic)
+       ═══════════════════════════════════════════════════════════ -->
+  <script src="./js/portfolio-data.js"></script>
+  <script src="./js/app.js"></script>
+
+  <!-- Inline init for background -->
+  <script>
+    (function(){
+      var D = window.PORTFOLIO_DATA;
+      if (!D) return;
+      var bg = document.getElementById('galleryBg');
+      if (bg) bg.style.backgroundImage = 'url(' + D.layer2Background + ')';
+    })();
+  </script>
+</body>
+</html>
